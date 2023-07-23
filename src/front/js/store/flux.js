@@ -47,7 +47,64 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
-			}
+			},
+
+			signup: async (email, password) => {
+				console.log("createUser");
+				const opts = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						email: email,
+						password: password
+					})
+				};
+
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "api/signup", opts);
+					const data = await response.json();
+
+					if (response.status !== 200) {
+						return ([false, data.msg]);
+					}
+
+					return ([true, data.msg]);
+				} catch (error) {
+
+				}
+			},
+
+			login: async (email, password) => {
+				console.log("actions: login")
+				const opts = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						email: email,
+						password: password
+					})
+				};
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "api/token", opts);
+					const data = await response.json();
+
+					if (response.status !== 200) {
+						return ([response.status, 'Bad user email or password!']);
+					}
+
+
+					await getActions().sessionStorageAndSetStoreDataSave('token', data.access_token);
+					return ([response.status, data.user_type]);
+				}
+				catch (error) {
+					// console.log("Contact service support", error);
+					return (["error", error]);
+				}
+			},
 		}
 	};
 };
