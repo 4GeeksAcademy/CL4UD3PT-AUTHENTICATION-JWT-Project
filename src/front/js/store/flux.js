@@ -49,8 +49,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ demo: demo });
 			},
 
+			sessionStorageAndSetStoreDataSave: (key, data) => {
+				sessionStorage.setItem([key], JSON.stringify(data));
+				setStore({ [key]: data });
+				// return true;
+			},
+
 			signup: async (email, password) => {
-				console.log("createUser");
+				console.log("signup");
 				const opts = {
 					method: "POST",
 					headers: {
@@ -89,16 +95,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 				};
 				try {
-					const response = await fetch(process.env.BACKEND_URL + "api/token", opts);
+					const response = await fetch(process.env.BACKEND_URL + "api/login", opts);
 					const data = await response.json();
 
 					if (response.status !== 200) {
-						return ([response.status, 'Bad user email or password!']);
+						return ([false, data.msg]);
 					}
 
-
 					await getActions().sessionStorageAndSetStoreDataSave('token', data.access_token);
-					return ([response.status, data.user_type]);
+					return ([true, data.msg]);
 				}
 				catch (error) {
 					// console.log("Contact service support", error);
