@@ -46,9 +46,6 @@ def create_token():
     if not user:
         return jsonify({"msg": "Bad username or password"}), 400
 
-    if not user.active:
-        return jsonify({"msg": "User no longer avaliable"}), 400
-
     access_token = create_access_token(
         identity=user.email, expires_delta=datetime.timedelta(hours=1))
 
