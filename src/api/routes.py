@@ -11,15 +11,21 @@ api = Blueprint('api', __name__)
 @api.route('/signup', methods=['POST'])
 def user_signup():
     body = request.json
-    user_exists = User.query.filter_by(email=body['email']).first();
+
+    if body['email'] == "":
+        return ({"msg": "Need to provide an email"}), 400
     
+    if body['password'] == "":
+        return ({"msg": "Need to provide a password"}), 400
+
+    user_exists = User.query.filter_by(email=body['email']).first();
     if user_exists:
         return ({"msg": "Email already registered in database"}), 400
     
     new_user = User(
         email=body["email"],
         password=body["password"],
-        is_active=body["is_active"]
+        is_active=True
     )
 
     db.session.add(new_user)
