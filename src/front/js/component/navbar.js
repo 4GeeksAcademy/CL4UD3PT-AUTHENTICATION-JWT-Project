@@ -1,9 +1,15 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const Navbar = () => {
 	const { actions, store } = useContext(Context);
+	const navigate = useNavigate();
+
+	const handleLogout = () => {
+		actions.logout();
+		navigate('/');
+	}
 
 	return (
 		<nav className="navbar navbar-light bg-light">
@@ -18,7 +24,7 @@ export const Navbar = () => {
 						</Link>
 					}
 					{store.token && store.token !== "" && store.token !== undefined ?
-						<button className="btn btn-primary">Logout</button>
+						<button className="btn btn-primary" onClick={handleLogout}>Logout</button>
 						:
 						<Link to="/login">
 							<button className="btn btn-success">Login</button>
