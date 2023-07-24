@@ -20,8 +20,8 @@ def user_signup():
 
     user = User.query.filter_by(email=email).first()
 
-    if not user:
-        return jsonify({"msg": "Bad username or password"}), 400
+    if user:
+        return jsonify({"msg": "Email already registered."}), 201
     
     new_user = User(
         email=email,
@@ -51,6 +51,17 @@ def create_token():
 
     return jsonify({'access_token': access_token}), 200
 
+
+@api.route('/verify/token', methods=['GET'])
+@jwt_required()
+def verify_token():
+    current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).one_or_none()
+
+    if not user:
+        return jsonify({"msg": "Unauthorized access!"}), 401
+
+    return jsonify({"msg": "Authorized user"}), 200
 
 
 @api.route('/hello', methods=['GET'])

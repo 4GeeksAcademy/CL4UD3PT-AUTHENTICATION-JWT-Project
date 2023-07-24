@@ -23,12 +23,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getMessage: async () => {
+				console.log("message")
 				try {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
-					setStore({ message: data.message })
+					setStore({ message: data.msg })
 					// don't forget to return something, that is how the async resolves
+					console.log(data)
 					return data;
 				} catch (error) {
 					console.log("Error loading message from backend", error)
@@ -47,6 +49,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+
+			syncTokenFromSessionStorage: () => {
+				if (sessionStorage.getItem('token')) return setStore({ token: JSON.parse(sessionStorage.getItem('token')) });
 			},
 
 			sessionStorageAndSetStoreDataSave: (key, data) => {
@@ -110,6 +116,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 					return (["error", error]);
 				}
 			},
+
+			verifyToken: async () => {
+				console.log('verifyToken');
+				const token = JSON.parse(sessionStorage.getItem('token'));
+				console.log(token);
+				const opts = {
+					method: "GET",
+					headers: {
+						"Authorization": "Bearer " + token
+					}
+				}
+				const response = await fetch(process.env.BACKEND_URL + "api/verify/token", opts);
+
+				if (response.status !== 200) {
+					return false;
+				}
+
+				return true;
+			},
+
+			logout: () => {
+				sessionStorage.clear();
+				setStore({ token: null });
+			}
+
 		}
 	};
 };

@@ -11,6 +11,10 @@ export const Login = () => {
 	const [password, setPassword] = useState("");
 	const [alertMessage, setAlertMessage] = useState("");
 
+	useEffect(() => {
+		if (store.token && store.token !== "" && store.token !== undefined) navigate("/private");
+	}, [])
+
 	const handleChange = (setState) => (event) => {
 		setState(event.target.value);
 	}
@@ -25,7 +29,6 @@ export const Login = () => {
 			setAlertMessage(response[1]);
 		}
 	}
-
 
 
 	return (
